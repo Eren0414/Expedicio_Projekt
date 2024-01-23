@@ -1,0 +1,7 @@
+C:\Tanulok\2023-2024\12d\Jáger Kristóf\c#\Expedíció\Expedicio_Projekt\ExpedicioProjekt\ExpedicioProjekt\bin\Debug\ExpedicioProjekt.exe.config
+C:\Tanulok\2023-2024\12d\Jáger Kristóf\c#\Expedíció\Expedicio_Projekt\ExpedicioProjekt\ExpedicioProjekt\bin\Debug\ExpedicioProjekt.exe
+C:\Tanulok\2023-2024\12d\Jáger Kristóf\c#\Expedíció\Expedicio_Projekt\ExpedicioProjekt\ExpedicioProjekt\bin\Debug\ExpedicioProjekt.pdb
+C:\Tanulok\2023-2024\12d\Jáger Kristóf\c#\Expedíció\Expedicio_Projekt\ExpedicioProjekt\ExpedicioProjekt\obj\Debug\ExpedicioProjekt.csproj.AssemblyReference.cache
+C:\Tanulok\2023-2024\12d\Jáger Kristóf\c#\Expedíció\Expedicio_Projekt\ExpedicioProjekt\ExpedicioProjekt\obj\Debug\ExpedicioProjekt.csproj.CoreCompileInputs.cache
+C:\Tanulok\2023-2024\12d\Jáger Kristóf\c#\Expedíció\Expedicio_Projekt\ExpedicioProjekt\ExpedicioProjekt\obj\Debug\ExpedicioProjekt.exe
+C:\Tanulok\2023-2024\12d\Jáger Kristóf\c#\Expedíció\Expedicio_Projekt\ExpedicioProjekt\ExpedicioProjekt\obj\Debug\ExpedicioProjekt.pdb

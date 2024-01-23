@@ -10,7 +10,17 @@ namespace ExpedicioProjekt
     {
         static void Main(string[] args)
         {
-
+            string valami = "ablskgpjt";
+            string valami2 = "ablskgpjt";
+            string megfejtes = "";
+            for (int i = 0; i < valami.Length; i++) {
+                Console.WriteLine(valami[i]);
+                Console.WriteLine(valami2[i]);
+                megfejtes += valami[i];
+            }
+            Console.WriteLine(megfejtes);
+            Console.ReadLine();
+           
         }
     }
 }

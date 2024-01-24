@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ExpedicioProjekt
 {
-    internal class Amatorok
+    internal class Nap
     {
         public int NapSzama { get; set; }
         public string EredetiUzenet { get; set; }

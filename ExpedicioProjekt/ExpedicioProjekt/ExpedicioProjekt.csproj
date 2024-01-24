@@ -43,10 +43,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Amatorok.cs" />
+    <Compile Include="Nap.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Radio.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

@@ -14,60 +14,118 @@ namespace ExpedicioProjekt
             string inputFile = "veetel.txt";
             string outputFile = "veetelMegfejtett.txt";
 
-            try
+            string[] lines = File.ReadAllLines(inputFile, Encoding.UTF8);
+
+            var napok = new Dictionary<int, List<string>>();
+
+            foreach (var line in lines)
             {
-                string[] lines = File.ReadAllLines(inputFile, Encoding.UTF8);
+                string[] lineParts = line.Split();
 
-                var napok = new Amatorok[lines.Length];
-
-                for (int i = 0; i < lines.Length; i++)
+                // Ellenőrzés a sor hosszára
+                if (lineParts.Length >= 3)
                 {
-                    string[] lineParts = lines[i].Split();
+                    // Csak a számokat tartjuk meg az első oszlopban
+                    string numericPart = new string(lineParts[0].Where(c => char.IsDigit(c)).ToArray());
 
-                    // Ellenőrzés a sor hosszára
-                    if (lineParts.Length >= 3)
+                    // Ellenőrzés az első oszlop formátumára
+                    if (int.TryParse(numericPart, out int napSzama))
                     {
-                        if (int.TryParse(lineParts[0], out int napSzama))
-                        {
-                            string eredetiUzenet = lineParts[2];
+                        string uzenet = lineParts[2];
 
-                            napok[i] = new Amatorok { NapSzama = napSzama, EredetiUzenet = eredetiUzenet };
-
-                            // Ellenőrzés, hogy a VisszafejtettUzenet ne legyen null
-                            napok[i].VisszafejtettUzenet = Radio.DecodeVeetelMessage(lines[i]) ?? string.Empty;
-                        }
-                        else
+                        if (!napok.ContainsKey(napSzama))
                         {
-                            Console.WriteLine($"Hiba a(z) {i + 1}. sorban: Az első oszlop nem érvényes szám.");
+                            napok[napSzama] = new List<string>();
                         }
+
+                        napok[napSzama].Add(uzenet);
                     }
                     else
                     {
-                        Console.WriteLine($"Hiba a(z) {i + 1}. sorban: Nem megfelelő formátum.");
+                        Console.WriteLine($"Hiba a sorban: Az első oszlop nem érvényes szám.");
                     }
                 }
-
-                using (StreamWriter writer = new StreamWriter(outputFile, false, Encoding.UTF8))
+                else
                 {
-                    foreach (var nap in napok)
+                    Console.WriteLine($"Hiba a sorban: Nem megfelelő formátum.");
+                }
+            }
+
+            using (StreamWriter writer = new StreamWriter(outputFile, false, Encoding.UTF8))
+            {
+                foreach (var nap in napok)
+                {
+                    int napSzama = nap.Key;
+                    List<string> uzenetek = nap.Value;
+
+                    // Összefésüljük az azonos napszámú üzeneteket
+                    string egyesitettUzenet = OsszefesuldAzonosNapUzeneteit(uzenetek);
+
+                    // Hiányzó betűk behelyettesítése
+                    string visszafejtettUzenet = EgeszitsdKiUzenetet(egyesitettUzenet);
+
+                    // Az üzenet utáni részt levágjuk
+                    int indexOfDollar = visszafejtettUzenet.IndexOf('$');
+                    if (indexOfDollar != -1)
                     {
-                        // Ellenőrzés, hogy az üzenet üres-e
-                        if (!string.IsNullOrEmpty(nap.VisszafejtettUzenet))
-                        {
-                            writer.WriteLine($"{nap.NapSzama};{nap.VisszafejtettUzenet}");
-                        }
+                        visszafejtettUzenet = visszafejtettUzenet.Substring(0, indexOfDollar);
+                    }
+
+                    // Ellenőrzés, hogy az üzenet üres-e
+                    if (!string.IsNullOrEmpty(visszafejtettUzenet))
+                    {
+                        writer.WriteLine($"{napSzama};{visszafejtettUzenet}");
                     }
                 }
+            }
 
-                Console.WriteLine("A visszafejtett üzenetek el lettek mentve a veetelMegfejtett.txt fájlba.");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Hiba történt: {ex.Message}");
-            }
+            Console.WriteLine("A visszafejtett üzenetek el lettek mentve a veetelMegfejtett.txt fájlba.");
 
             Console.ReadLine();
         }
-    }
+
+        static string EgeszitsdKiUzenetet(string uzenet)
+        {
+            StringBuilder kiegeszitettUzenet = new StringBuilder();
+            int hianyzoIndex = 0;
+
+            for (int i = 0; i < uzenet.Length; i++)
+            {
+                if (uzenet[i] == '#')
+                {
+                    // Hiányzó betűk behelyettesítése
+                    if (hianyzoIndex < uzenet.Length)
+                    {
+                        kiegeszitettUzenet.Append(uzenet[hianyzoIndex]);
+                        hianyzoIndex++;
+                    }
+                }
+                else
+                {
+                    // Egyéb karakterek egyszerű másolása
+                    kiegeszitettUzenet.Append(uzenet[i]);
+                }
+            }
+
+            return kiegeszitettUzenet.ToString();
+        }
+
+        static string OsszefesuldAzonosNapUzeneteit(List<string> uzenetek)
+        {
+            StringBuilder egyesitettUzenet = new StringBuilder();
+
+            // A leghosszabb üzenet hosszáig iterálunk
+            for (int i = 0; i < uzenetek.Max(u => u.Length); i++)
+            {
+                // Az összes nap uzenetének i. karakterét veszi
+                char karakter = uzenetek.Where(u => i < u.Length).Select(u => u[i]).FirstOrDefault();
+
+                // Az egyesített üzenethez hozzáadjuk a karaktert
+                egyesitettUzenet.Append(karakter);
+            }
+
+            return egyesitettUzenet.ToString();
+        }
     }
 }
+

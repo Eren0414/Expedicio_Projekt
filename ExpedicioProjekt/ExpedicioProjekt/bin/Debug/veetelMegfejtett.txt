@@ -1,9 +1,1 @@
-﻿0;#aaakon#aulikont
-13;aa##e#
-30;falfal#al#dt
-3;fefekon#tu#ikko
-2;#zz#ir#nidrid#ng
-1;#oo#rol#figyeltrkmeo
-130;#gesgesalk##es#afalkk
-23;szsz##a#yd#ideiga
-10;#iiy#y#ukigyeltuk##uikigho
+﻿

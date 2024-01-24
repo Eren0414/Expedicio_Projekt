@@ -16,33 +16,25 @@ namespace ExpedicioProjekt
 
             string[] lines = File.ReadAllLines(inputFile, Encoding.UTF8);
 
-            var napok = new Dictionary<int, List<string>>();
+            var napok = new Dictionary<int, StringBuilder>();
 
             foreach (var line in lines)
             {
-                string[] lineParts = line.Split();
+                string[] parts = line.Split(' ');
 
-                // Ellenőrzés a sor hosszára
-                if (lineParts.Length >= 3)
+                if (parts.Length >= 3 && int.TryParse(parts[0], out int napSzama))
                 {
-                    // Csak a számokat tartjuk meg az első oszlopban
-                    string numericPart = new string(lineParts[0].Where(c => char.IsDigit(c)).ToArray());
+                    string decryptedMessage = Radio.DecodeVeetelMessage(parts[2]);
 
-                    // Ellenőrzés az első oszlop formátumára
-                    if (int.TryParse(numericPart, out int napSzama))
+                    if (napok.ContainsKey(napSzama))
                     {
-                        string uzenet = lineParts[2];
-
-                        if (!napok.ContainsKey(napSzama))
-                        {
-                            napok[napSzama] = new List<string>();
-                        }
-
-                        napok[napSzama].Add(uzenet);
+                        // Azonos nap esetén az üzenetet hozzáadjuk a már meglévőhöz
+                        napok[napSzama].Append(decryptedMessage);
                     }
                     else
                     {
-                        Console.WriteLine($"Hiba a sorban: Az első oszlop nem érvényes szám.");
+                        // Új nap esetén létrehozzuk a nap üzenetét
+                        napok.Add(napSzama, new StringBuilder(decryptedMessage));
                     }
                 }
                 else
@@ -53,79 +45,16 @@ namespace ExpedicioProjekt
 
             using (StreamWriter writer = new StreamWriter(outputFile, false, Encoding.UTF8))
             {
-                foreach (var nap in napok)
+                foreach (var kvp in napok)
                 {
-                    int napSzama = nap.Key;
-                    List<string> uzenetek = nap.Value;
-
-                    // Összefésüljük az azonos napszámú üzeneteket
-                    string egyesitettUzenet = OsszefesuldAzonosNapUzeneteit(uzenetek);
-
-                    // Hiányzó betűk behelyettesítése
-                    string visszafejtettUzenet = EgeszitsdKiUzenetet(egyesitettUzenet);
-
-                    // Az üzenet utáni részt levágjuk
-                    int indexOfDollar = visszafejtettUzenet.IndexOf('$');
-                    if (indexOfDollar != -1)
-                    {
-                        visszafejtettUzenet = visszafejtettUzenet.Substring(0, indexOfDollar);
-                    }
-
-                    // Ellenőrzés, hogy az üzenet üres-e
-                    if (!string.IsNullOrEmpty(visszafejtettUzenet))
-                    {
-                        writer.WriteLine($"{napSzama};{visszafejtettUzenet}");
-                    }
+                    // A helyes sorrendben írjuk ki a napokat és azokat az üzeneteket, amiket összefűztünk
+                    writer.WriteLine($"{kvp.Key} {kvp.Value}");
                 }
             }
 
             Console.WriteLine("A visszafejtett üzenetek el lettek mentve a veetelMegfejtett.txt fájlba.");
-
             Console.ReadLine();
         }
-
-        static string EgeszitsdKiUzenetet(string uzenet)
-        {
-            StringBuilder kiegeszitettUzenet = new StringBuilder();
-            int hianyzoIndex = 0;
-
-            for (int i = 0; i < uzenet.Length; i++)
-            {
-                if (uzenet[i] == '#')
-                {
-                    // Hiányzó betűk behelyettesítése
-                    if (hianyzoIndex < uzenet.Length)
-                    {
-                        kiegeszitettUzenet.Append(uzenet[hianyzoIndex]);
-                        hianyzoIndex++;
-                    }
-                }
-                else
-                {
-                    // Egyéb karakterek egyszerű másolása
-                    kiegeszitettUzenet.Append(uzenet[i]);
-                }
-            }
-
-            return kiegeszitettUzenet.ToString();
-        }
-
-        static string OsszefesuldAzonosNapUzeneteit(List<string> uzenetek)
-        {
-            StringBuilder egyesitettUzenet = new StringBuilder();
-
-            // A leghosszabb üzenet hosszáig iterálunk
-            for (int i = 0; i < uzenetek.Max(u => u.Length); i++)
-            {
-                // Az összes nap uzenetének i. karakterét veszi
-                char karakter = uzenetek.Where(u => i < u.Length).Select(u => u[i]).FirstOrDefault();
-
-                // Az egyesített üzenethez hozzáadjuk a karaktert
-                egyesitettUzenet.Append(karakter);
-            }
-
-            return egyesitettUzenet.ToString();
-        }
-    }
+    }        
 }
 

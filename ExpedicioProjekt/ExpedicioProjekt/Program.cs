@@ -15,7 +15,11 @@ namespace ExpedicioProjekt
 
             Radio r = new Radio(fajl);
 
-            r.Megfejt();
+            r.Statisztika();
+
+            Console.WriteLine("A megfejtett üzenetet a 'veetelMegfejtett.txt' fájlban találod.");
+            Console.WriteLine("Statisztika kiírva a 'napiStatisztika.txt' fájlba.");
+
 
             Console.ReadLine();
         }

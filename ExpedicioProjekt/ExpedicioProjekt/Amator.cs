@@ -12,8 +12,6 @@ namespace ExpedicioProjekt
         public int amator;
         public string uzenet;
         
-      
-
         public Amator(int nap, int amator, string uzenet)
         {
             this.nap = nap;

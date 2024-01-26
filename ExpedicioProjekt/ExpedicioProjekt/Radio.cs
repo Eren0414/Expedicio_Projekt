@@ -42,9 +42,12 @@ namespace ExpedicioProjekt
                 }
                 megfejtettuzenetek.Add(megfejtettuzenet);
             }
-            foreach (var uzenet in megfejtettuzenetek)
+            using (StreamWriter writer = new StreamWriter("veetelMegfejtett.txt"))
             {
-                Console.WriteLine(uzenet);
+                for (int i = 0; i < megfejtettuzenetek.Count; i++)
+                {
+                    writer.WriteLine($"{i + 1}; {megfejtettuzenetek[i]}");
+                }
             }
         }
 
@@ -88,6 +91,40 @@ namespace ExpedicioProjekt
                 {
                     string uzenet = sorok[i];
                     amatorok.Add(new Amator(nap, amator, uzenet));
+                }
+            }
+        }
+
+        internal void Statisztika()
+        {
+            var napok =
+            from amator in amatorok
+            group amator by amator.nap into groups
+            orderby groups.Key
+            select new { nap = groups.Key, Amatorok = groups.ToList() };
+
+            // Kiírás a fájlba
+            using (StreamWriter writer = new StreamWriter("napiStatisztika.txt"))
+            {
+                foreach (var nap in napok)
+                {
+                    int amatorokSzama = nap.Amatorok.Count;
+                    int felnottFarkas = 0;
+                    int gyerekFarkas = 0;
+
+                    foreach (var amator in nap.Amatorok)
+                    {
+                        if (amator.uzenet.Contains("felnott farkas"))
+                        {
+                            felnottFarkas++;
+                        }
+                        else if (amator.uzenet.Contains("gyerek farkas"))
+                        {
+                            gyerekFarkas++;
+                        }
+                    }
+
+                    writer.WriteLine($"{nap.nap};{amatorokSzama};{(felnottFarkas < 0 ? felnottFarkas.ToString() : "-")};{(gyerekFarkas > 0 ? gyerekFarkas.ToString() : "-")}");
                 }
             }
         }

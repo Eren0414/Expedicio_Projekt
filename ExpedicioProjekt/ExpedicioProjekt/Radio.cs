@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace ExpedicioProjekt
@@ -38,20 +39,21 @@ namespace ExpedicioProjekt
                 {
                     char karakter = elsouzenet[i];
                     megfejtettuzenet += Megfejtes(karakter, aznapiuzenetek, i);
-
                 }
                 megfejtettuzenetek.Add(megfejtettuzenet);
             }
+
             using (StreamWriter writer = new StreamWriter("veetelMegfejtett.txt"))
             {
                 for (int i = 0; i < megfejtettuzenetek.Count; i++)
                 {
-                    writer.WriteLine($"{i + 1}; {megfejtettuzenetek[i]}");
+                    string farkasOutput = (megfejtettuzenetek[i].Contains("/") ? megfejtettuzenetek[i].Split('/')[0] + "/" + megfejtettuzenetek[i].Split('/')[1] : "");
+                    writer.WriteLine($"{i + 1}: {megfejtettuzenetek[i]} {farkasOutput}");
                 }
             }
         }
 
-        private string Megfejtes(char karakter, List<Amator> aznapiuzenetek, int i)
+        private static string Megfejtes(char karakter, List<Amator> aznapiuzenetek, int i)
         {
             string vissza = "#";
             if (karakter != '#')
@@ -98,12 +100,11 @@ namespace ExpedicioProjekt
         internal void Statisztika()
         {
             var napok =
-            from amator in amatorok
-            group amator by amator.nap into groups
-            orderby groups.Key
-            select new { nap = groups.Key, Amatorok = groups.ToList() };
+                from amator in amatorok
+                group amator by amator.nap into groups
+                orderby groups.Key
+                select new { nap = groups.Key, Amatorok = groups.ToList() };
 
-            // Kiírás a fájlba
             using (StreamWriter writer = new StreamWriter("napiStatisztika.txt"))
             {
                 foreach (var nap in napok)
@@ -114,17 +115,19 @@ namespace ExpedicioProjekt
 
                     foreach (var amator in nap.Amatorok)
                     {
-                        if (amator.uzenet.Contains("felnott farkas"))
+                        Match match = Regex.Match(amator.uzenet, @"(\d+)/(\d+)");
+
+                        if (match.Success)
                         {
-                            felnottFarkas++;
-                        }
-                        else if (amator.uzenet.Contains("gyerek farkas"))
-                        {
-                            gyerekFarkas++;
+                            string x = match.Value;
+                            felnottFarkas = int.Parse(match.Groups[1].Value);
+                            gyerekFarkas = int.Parse(match.Groups[2].Value);
                         }
                     }
 
-                    writer.WriteLine($"{nap.nap};{amatorokSzama};{(felnottFarkas < 0 ? felnottFarkas.ToString() : "-")};{(gyerekFarkas > 0 ? gyerekFarkas.ToString() : "-")}");
+                    string farkasOutput = $"{(felnottFarkas > 0 ? felnottFarkas.ToString() : "-")};{(gyerekFarkas > 0 ? gyerekFarkas.ToString() : "-")}";
+
+                    writer.WriteLine($"{nap.nap};{amatorokSzama};{farkasOutput}");
                 }
             }
         }

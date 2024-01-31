@@ -12,14 +12,11 @@ namespace ExpedicioProjekt
         static void Main(string[] args)
         {
             string fajl = "veetel.txt";
-
             Radio r = new Radio(fajl);
 
-            r.Statisztika();
-
             Console.WriteLine("A megfejtett üzenetet a 'veetelMegfejtett.txt' fájlban találod.");
-            Console.WriteLine("Statisztika kiírva a 'napiStatisztika.txt' fájlba.");
-
+            r.Statisztika();
+            Console.WriteLine("A napi statisztika eredményeit megtalálja a 'napiStatisztika' fájlban.");
 
             Console.ReadLine();
         }
